@@ -1,0 +1,18 @@
+2016.1.15
+	1.创建项目CameraManageSystem
+	2.配置全站编码过滤器
+	3.设置eclipse创建jsp页面时，默认为utf-8
+	4.开始写注册页面
+		>创建前台目录jsps
+			>在该目录下创建一个css,js,还有一个user目录
+			>在jsps/css和jsps/js目录下分别创建一个user目录
+			>在jsps/css/user/下创建一个regist.css。在jsps/js/user/下创建一个regist.js。在jsps/user目录下创建一个regist.jsp文件
+		>在regist.jsp中添加控件  
+		>在regist.css中设计样式
+	5.让项目支持使用jstl标签，将jstl-impl-1.2.jar拷贝到WEB-INF/lib目录下，Build path添加到项目中，在jsp头部加上<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>，即可使用
+	6.添加验证码功能
+		>在web.xml配置一下VerifyServlet
+		>在img标签中的src设置成这个VerifyServlet，即可搞定验证码
+	7.隐藏没有错误信息的图片
+	8.切换注册按钮的图片
+	9.输入框得到焦点隐藏错误信息
