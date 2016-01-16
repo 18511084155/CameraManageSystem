@@ -27,7 +27,274 @@ $(function(){
 		$("#" + labelId).text("");//把label的内容清空！
 		showError($("#" + labelId));//隐藏没有信息的label
 	});
+	
+	/*
+	 * 4.输入框失去焦点进行校验
+	 */
+	$(".inputClass").blur(function(){
+		var id = $(this).attr("id");//得到输入框ID
+		var funName = "validate" + id.substring(0,1).toUpperCase() + id.substring(1) + "()";//得到函数校验名
+		eval(funName);//执行函数
+	}); 
+	
+	/*
+	 * 5. 表单提交时进行校验
+	 */
+	$("#registForm").submit(function() {
+		var bool = true;//表示校验通过
+		if(!validateLoginname()) {
+			bool = false;
+		}
+		if(!validateLoginpass()) {
+			bool = false;
+		}
+		if(!validateReloginpass()) {
+			bool = false;
+		}
+		if(!validateEmail()) {
+			bool = false;
+		}
+		if(!validateVerifyCode()) {
+			bool = false;
+		}
+		
+		return bool;
+	});
 });
+
+/*
+ * 登录名校验方法
+ */
+function validateLoginname(){
+	var id = "loginname";
+	var value = $("#" + id).val();
+	/*
+	 * 1.非空校验
+	 */
+	if (!value) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("用户名不能为空！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 2.长度校验
+	 */
+	if (value.length < 3 || value.length > 20) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("用户名长度必须在3 ~ 20之间！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 3.是否注册校验
+	 */
+	$.ajax({
+		url:"/CameraManageSystem/UserServlet",//要请求的servlet
+		data:{method:"ajaxValidateLoginname", loginname:value},//给服务器的参数
+		type:"POST",
+		dataType:"json",
+		async:false,//是否异步请求，如果是异步，那么不会等服务器返回，我们这个函数就向下运行了。
+		cache:false,
+		success:function(result) {
+			if(!result) {//如果校验失败
+				$("#" + id + "Error").text("用户名已被注册！");
+				showError($("#" + id + "Error"));
+				return false;
+			}
+		}
+	});
+	
+	return true;
+}
+
+/*
+ * 登录密码校验方法
+ */
+function validateLoginpass(){
+	var id = "loginpass";
+	var value = $("#" + id).val();
+	/*
+	 * 1.非空校验
+	 */
+	if (!value) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("密码不能为空！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 2.长度校验
+	 */
+	if (value.length < 3 || value.length > 20) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("密码长度必须在3 ~ 20之间！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	
+	return true;
+}
+
+/*
+ * 确认密码校验方法
+ */
+function validateReloginpass(){
+	var id = "reloginpass";
+	var value = $("#" + id).val();
+	/*
+	 * 1.非空校验
+	 */
+	if (!value) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("密码不能为空！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 2.两次输入是否一致校验
+	 */
+	if (value != $("#loginpass").val()) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("两次密码不一致！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	
+	return true;
+}
+
+/*
+ * Email校验方法
+ */
+function validateEmail(){
+	var id = "email";
+	var value = $("#" + id).val();
+	/*
+	 * 1.非空校验
+	 */
+	if (!value) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("Email不能为空！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 2.Email格式校验
+	 */
+	if (!/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/.test(value)) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("Email格式不正确！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 3.是否注册校验
+	 */
+	$.ajax({
+		url:"/CameraManageSystem/UserServlet",
+		data:{method:"ajaxValidateEmail", email:value},
+		type:"POST",
+		dataType:"json",
+		async:false,
+		cache:false,
+		success:function(result){
+			if (!result) {
+				$("#" + id + "Error").text("邮箱已经被注册！");
+				showError($("#" + id + "Error"));
+				return false;
+			}
+		}
+	});
+	
+	return true;	
+}
+
+/*
+ * 验证码校验方法
+ */
+function validateVerifyCode(){
+	var id = "verifyCode";
+	var value = $("#" + id).val();
+	/*
+	 * 1.非空校验
+	 */
+	if (!value) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("验证码不能为空！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 2.长度校验
+	 */
+	if (value.length != 4) {
+		/*
+		 * 获取label
+		 * 设置错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("错误的验证码！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 3.验证码是否正确校验
+	 */
+	$.ajax({
+		url:"/CameraManageSystem/UserServlet",
+		data:{method:"ajaxValidateVerifyCode", verifyCode:value},
+		type:"POST",
+		dataType:"json",
+		async:false,
+		cache:false,
+		success:function(result){
+			if (!result) {
+				$("#" + id + "Error").text("验证码有误！");
+				showError($("#" + id + "Error"));
+				return false;
+			}
+		}
+	});
+	
+	return true;
+}
 
 /*
  * 判断当前元素是否存在内容，如果存在显示图片，不存在不显示图片
