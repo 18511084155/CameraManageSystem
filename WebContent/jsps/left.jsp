@@ -1,5 +1,6 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" isELIgnored="false"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -25,11 +26,11 @@
  * 1. 对象名必须与第一个参数相同！
    2. 第二个参数是显示在菜单上的大标题
  */
-var bar = new Q6MenuBar("bar", "传智播客网上书城");
+var bar = new Q6MenuBar("bar", "变电站");
 $(function() {
 	bar.colorStyle = 4;//指定配色样式，一共0,1,2,3,4
 	bar.config.imgDir = "<c:url value='/menu/img/'/>";//小工具所需图片的路径
-	bar.config.radioButton=true;//是否排斥，多个一级分类是否排斥
+	bar.config.radioButton=false;//是否排斥，多个一级分类是否排斥
 
 	/*
 	1. 程序设计：一级分类名称
@@ -37,11 +38,12 @@ $(function() {
 	3. /goods/jsps/book/list.jsp：点击二级分类后链接到的URL
 	4. body:链接的内容在哪个框架页中显示
 	*/
-<c:forEach items="${parents}" var="parent">
-  <c:forEach items="${parent.children}" var="child">
-	bar.add("${parent.cname}", "${child.cname}", "/goods/BookServlet?method=findByCategory&cid=${child.cid}", "body");
-  </c:forEach>
-</c:forEach>
+	bar.add("测试节点", "测试子节点", "", "body");
+	<c:forEach items="${stations}" var="station">
+  		<c:forEach items="${station.cameraList}" var="camera">
+			bar.add("${station.station_name_videoplant}", "${camera.name}", "", "body");
+  		</c:forEach>
+	</c:forEach>
 	
 	$("#menu").html(bar.toString());
 });
